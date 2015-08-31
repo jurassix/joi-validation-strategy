@@ -1,0 +1,11 @@
+# exact folders
+/out/
+/examples/
+/lib
+
+# masks
+.idea
+node_modules
+*.log
+*.sublime-project
+*.sublime-workspace

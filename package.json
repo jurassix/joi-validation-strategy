@@ -1,0 +1,63 @@
+{
+  "name": "joi-validation-strategy",
+  "version": "0.0.0",
+  "description": "Joi validation strategy for react-validation-mixin",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "npm run build:lib",
+    "build:lib": "babel src --out-dir lib",
+    "test": "karma start karma.conf.js --single-run",
+    "test-watch": "karma start karma.conf.js",
+    "clean": "rimraf lib",
+    "lint": "eslint src",
+    "prepublish": "npm run clean && npm run build",
+    "precommit": "npm test && npm build",
+    "prepush": "npm test && npm build",
+    "postmerge": "npm install && npm build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jurassix/joi-validation-strategy.git"
+  },
+  "keywords": [
+    "joi",
+    "validation",
+    "validator",
+    "strategy",
+    "react-validation-mixin",
+    "react"
+  ],
+  "author": "jurassix (clinton.ayres@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jurassix/joi-validation-strategy/issues"
+  },
+  "homepage": "https://github.com/jurassix/react-validation-mixin",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.23",
+    "babel-eslint": "^4.1.0",
+    "babel-loader": "^5.3.2",
+    "babelify": "^6.3.0",
+    "browserify": "^11.0.1",
+    "chai": "^3.0.0",
+    "eslint": "^1.1.0",
+    "eslint-config-airbnb": "0.0.8",
+    "eslint-plugin-react": "^3.3.0",
+    "husky": "^0.8.1",
+    "joi": "^6.5.0",
+    "karma": "^0.13.9",
+    "karma-browserify": "^4.3.0",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-mocha": "^0.2.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.2.5",
+    "rimraf": "^2.4.3"
+  },
+  "peerDependencies": {
+    "joi": ">=5.1.0"
+  },
+  "dependencies": {
+    "lodash.union": "^3.1.0"
+  }
+}
