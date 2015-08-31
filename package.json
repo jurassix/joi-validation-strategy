@@ -2,7 +2,7 @@
   "name": "joi-validation-strategy",
   "version": "0.0.1",
   "description": "Joi validation strategy for react-validation-mixin",
-  "main": "./lib/index.js",
+  "main": "./lib/joiValidationStrategy.js",
   "scripts": {
     "build": "npm run build:lib",
     "build:lib": "babel src --out-dir lib",
