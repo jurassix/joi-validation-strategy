@@ -3,7 +3,7 @@ import union from 'lodash.union';
 
 export default joiOptions => {
   return {
-    validate: function(data = {}, joiSchema = {}, key) {
+    validate: function(data = {}, joiSchema = {}, key, callback = () => {}) {
       const options = {
         abortEarly: false,
         allowUnknown: true,
@@ -14,11 +14,11 @@ export default joiOptions => {
         union(Object.keys(joiSchema), Object.keys(data)).forEach(function(error) {
           errors[error] = errors[error] || [];
         });
-        return errors;
+        callback(errors);
       }
       const result = {};
       result[key] = errors[key];
-      return result;
+      callback(result);
     },
     _format: function(joiResult) {
       if (joiResult.error !== null) {
