@@ -1,6 +1,6 @@
 {
   "name": "joi-validation-strategy",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Joi validation strategy for react-validation-mixin",
   "main": "./lib/joiValidationStrategy.js",
   "scripts": {
