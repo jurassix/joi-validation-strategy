@@ -4,7 +4,7 @@
   "description": "Joi validation strategy for react-validation-mixin",
   "main": "./lib/joiValidationStrategy.js",
   "scripts": {
-    "build": "npm run build:lib",
+    "build": "npm run lint && npm run build:lib",
     "build:lib": "babel src --out-dir lib",
     "test": "karma start karma.conf.js --single-run",
     "test-watch": "karma start karma.conf.js",
@@ -45,7 +45,7 @@
     "eslint-config-airbnb": "0.0.8",
     "eslint-plugin-react": "^3.3.0",
     "husky": "^0.8.1",
-    "joi": "^6.5.0",
+    "joi": "^6.7.0",
     "karma": "^0.13.9",
     "karma-browserify": "^4.3.0",
     "karma-chrome-launcher": "^0.2.0",
@@ -58,6 +58,6 @@
     "joi": ">=5.1.0"
   },
   "dependencies": {
-    "lodash.union": "^3.1.0"
+    "object-path": "^0.9.2"
   }
 }

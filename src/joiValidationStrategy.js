@@ -1,5 +1,6 @@
 import Joi from 'joi';
-import union from 'lodash.union';
+import objectPath from 'object-path';
+import {hydrate, isEmpty} from './utils';
 
 export default joiOptions => {
   return {
@@ -9,25 +10,27 @@ export default joiOptions => {
         allowUnknown: true,
         ...joiOptions,
       };
-      const errors = this._format(Joi.validate(data, joiSchema, options));
-      if (key === undefined) {
-        union(Object.keys(joiSchema), Object.keys(data)).forEach(function(error) {
-          errors[error] = errors[error] || [];
-        });
+      const errors = hydrate(this.collectErrors(Joi.validate(data, joiSchema, options)));
+      if (key === undefined || key === null || isEmpty(errors)) {
         return callback(errors);
       }
       const result = {};
-      result[key] = errors[key];
+      const value = objectPath.get(errors, key);
+      if (value !== undefined && value !== null) {
+        objectPath.set(result, key, value);
+      }
       return callback(result);
     },
-    _format: function(joiResult) {
+    collectErrors: function(joiResult) {
       if (joiResult.error !== null) {
-        return joiResult.error.details.reduce(function(memo, detail) {
-          if (!Array.isArray(memo[detail.path])) {
-            memo[detail.path] = [];
+        return joiResult.error.details.reduce((errors, detail) => {
+          const value = errors[detail.path];
+          if (value === undefined || value === null) {
+            errors[detail.path] = detail.message;
+          } else {
+            errors[detail.path] += `\n${detail.message}`;
           }
-          memo[detail.path].push(detail.message);
-          return memo;
+          return errors;
         }, {});
       }
       return {};
