@@ -58,6 +58,7 @@
     "joi": ">=5.1.0"
   },
   "dependencies": {
-    "object-path": "^0.9.2"
+    "lodash.isempty": "^3.0.4",
+    "lodash.set": "^3.7.4"
   }
 }

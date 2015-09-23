@@ -1,8 +1,5 @@
-import objectPath from 'object-path';
+import set from 'lodash.set';
 
 export default function hydrate(flat) {
-  return Object.keys(flat).reduce((obj, path) => {
-    objectPath.set(obj, path, flat[path]);
-    return obj;
-  }, {});
+  return Object.keys(flat).reduce((obj, path) => set(obj, path, flat[path]), {});
 }

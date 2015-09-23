@@ -11,7 +11,7 @@ describe('Joi Validator', () => {
       firstName: Joi.string().required(),
     };
     const data = {firstName: 'foo'};
-    strategy().validate(data, schema, null, errors => {
+    strategy().validate(data, schema, {}, errors => {
       expect(errors).to.be.empty;
       done();
     });
@@ -21,7 +21,7 @@ describe('Joi Validator', () => {
       firstName: Joi.string().required(),
     };
     const data = {firstName: 'foo'};
-    strategy().validate(data, schema, 'firstName', errors => {
+    strategy().validate(data, schema, {key:'firstName'}, errors => {
       expect(errors).to.be.empty;
       done();
     });
@@ -30,7 +30,7 @@ describe('Joi Validator', () => {
     const schema = {
       firstName: Joi.string().required(),
     };
-    strategy().validate({}, schema, null, errors => {
+    strategy().validate({}, schema, {}, errors => {
       expect(errors).to.have.keys(['firstName']);
       expect(errors['firstName']).to.equal('"firstName" is required');
       done();
@@ -40,7 +40,7 @@ describe('Joi Validator', () => {
     const schema = {
       firstName: Joi.string().required(),
     };
-    strategy().validate({}, schema, 'firstName', errors => {
+    strategy().validate({}, schema, {key:'firstName'}, errors => {
       expect(errors).to.have.keys(['firstName']);
       expect(errors['firstName']).to.equal('"firstName" is required');
       done();
@@ -53,7 +53,7 @@ describe('Joi Validator', () => {
       },
     });
     const data = {a: {b: 'foo'}};
-    strategy().validate(data, schema, null, errors => {
+    strategy().validate(data, schema, {}, errors => {
       expect(errors).to.be.empty;
       done();
     });
@@ -65,33 +65,33 @@ describe('Joi Validator', () => {
       },
     });
     const data = {a: {b: 'foo'}};
-    strategy().validate(data, schema, 'a.b', errors => {
+    strategy().validate(data, schema, {key:'a.b'}, errors => {
       expect(errors).to.be.empty;
       done();
     });
   });
-  it('should validate nested schema and data', (done) => {
+  it('should fail validation for nested schema and data', (done) => {
     const schema = Joi.object().keys({
       a: {
         b: Joi.string().required(),
       },
     });
     const data = {a:{}};
-    strategy().validate(data, schema, null, errors => {
+    strategy().validate(data, schema, {}, errors => {
       expect(errors).to.have.keys(['a']);
       expect(errors['a']).to.have.keys(['b']);
       expect(errors['a']['b']).to.equal('"b" is required');
       done();
     });
   });
-  it('should validate nested schema and data for deep key', (done) => {
+  it('should fail validation for nested schema and data for deep key', (done) => {
     const schema = Joi.object().keys({
       a: {
         b: Joi.string().required(),
       },
     });
     const data = {a:{}};
-    strategy().validate(data, schema, 'a.b', errors => {
+    strategy().validate(data, schema, {key:'a.b'}, errors => {
       expect(errors).to.have.keys(['a']);
       expect(errors['a']).to.have.keys(['b']);
       expect(errors['a']['b']).to.equal('"b" is required');
@@ -105,8 +105,8 @@ describe('Joi Validator', () => {
       },
     });
     const data = {a:{}};
-    strategy().validate(data, schema, 'a.b.c', errors => {
-      expect(errors).to.be.empty;
+    strategy().validate(data, schema, {key:'a.b.c'}, errors => {
+      expect(errors).to.deep.equal({a:{b:{c:undefined}}});
       done();
     });
   });
@@ -115,7 +115,7 @@ describe('Joi Validator', () => {
       range: Joi.array().items(Joi.number().min(0).max(10)),
       password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/)
     };
-    strategy().validate({range: [0], password: '123'}, schema, null, errors => {
+    strategy().validate({range: [0], password: '123'}, schema, {}, errors => {
       expect(errors).to.be.empty;
       done();
     });
@@ -125,7 +125,7 @@ describe('Joi Validator', () => {
       range: Joi.array().items(Joi.number().min(0).max(10)),
       password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/)
     };
-    strategy().validate({range: [0], password: '123'}, schema, 'range', errors => {
+    strategy().validate({range: [0], password: '123'}, schema, {key:'range'}, errors => {
       expect(errors).to.be.empty;
       done();
     });
@@ -135,7 +135,7 @@ describe('Joi Validator', () => {
       range: Joi.array().items(Joi.number().min(0).max(10)),
       password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/)
     };
-    strategy().validate({range: [100,200], password: ''}, schema, null, errors => {
+    strategy().validate({range: [100,200], password: ''}, schema, {}, errors => {
       expect(errors).to.have.keys(['range','password']);
       expect(errors['password']).to.equal('"password" is not allowed to be empty\n"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
       expect(errors['range']).to.have.length(2);
@@ -149,7 +149,7 @@ describe('Joi Validator', () => {
       range: Joi.array().items(Joi.number().min(0).max(10)),
       password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/)
     };
-    strategy().validate({range: [100,200], password: ''}, schema, 'password', errors => {
+    strategy().validate({range: [100,200], password: ''}, schema, {key:'password'}, errors => {
       expect(errors).to.have.keys(['password']);
       expect(errors['password']).to.equal('"password" is not allowed to be empty\n"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
       expect(errors['range']).to.be.undefined;

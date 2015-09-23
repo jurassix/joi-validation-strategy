@@ -1,25 +1,23 @@
 import Joi from 'joi';
-import objectPath from 'object-path';
-import {hydrate, isEmpty} from './utils';
+import set from 'lodash.set';
+import isEmpty from 'lodash.isEmpty';
+import {hydrate} from './utils';
 
 export default joiOptions => {
   return {
-    validate: function(data = {}, joiSchema = {}, key, callback = () => {}) {
-      const options = {
+    validate: function(data = {}, joiSchema = {}, options = {}, callback) {
+      if (typeof callback !== 'function') throw new Error('callback was not provided');
+      const {key, prevErrors = {}} = options;
+      const validationOptions = {
         abortEarly: false,
         allowUnknown: true,
         ...joiOptions,
       };
-      const errors = hydrate(this.collectErrors(Joi.validate(data, joiSchema, options)));
+      const errors = this.collectErrors(Joi.validate(data, joiSchema, validationOptions));
       if (key === undefined || key === null || isEmpty(errors)) {
-        return callback(errors);
+        return callback(hydrate(errors));
       }
-      const result = {};
-      const value = objectPath.get(errors, key);
-      if (value !== undefined && value !== null) {
-        objectPath.set(result, key, value);
-      }
-      return callback(result);
+      return callback(set(prevErrors, key, errors[key]));
     },
     collectErrors: function(joiResult) {
       if (joiResult.error !== null) {
