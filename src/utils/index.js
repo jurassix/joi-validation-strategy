@@ -1,5 +1,3 @@
 import hydrate from './hydrate';
 
-export default {
-  hydrate,
-};
+export default {hydrate};

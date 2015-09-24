@@ -2,32 +2,30 @@ import Joi from 'joi';
 import set from 'lodash.set';
 import isEmpty from 'lodash.isEmpty';
 import {hydrate} from './utils';
+import invariant from 'invariant';
 
 export default joiOptions => {
   return {
     validate: function(data = {}, joiSchema = {}, options = {}, callback) {
-      if (typeof callback !== 'function') throw new Error('callback was not provided');
+      invariant(typeof callback === 'function', 'joi-validation-strategy is asynchronous, a callback is expected: validate(data, schema, options, callback)');
       const {key, prevErrors = {}} = options;
       const validationOptions = {
         abortEarly: false,
         allowUnknown: true,
         ...joiOptions,
       };
-      const errors = this.collectErrors(Joi.validate(data, joiSchema, validationOptions));
-      if (key === undefined || key === null || isEmpty(errors)) {
-        return callback(hydrate(errors));
-      }
-      return callback(set(prevErrors, key, errors[key]));
+      Joi.validate(data, joiSchema, validationOptions, (error) => {
+        const errors = this.collectErrors(error);
+        if (key === undefined || key === null || isEmpty(errors)) {
+          return callback(hydrate(errors));
+        }
+        return callback(set(prevErrors, key, errors[key]));
+      });
     },
-    collectErrors: function(joiResult) {
-      if (joiResult.error !== null) {
-        return joiResult.error.details.reduce((errors, detail) => {
-          const value = errors[detail.path];
-          if (value === undefined || value === null) {
-            errors[detail.path] = detail.message;
-          } else {
-            errors[detail.path] += `\n${detail.message}`;
-          }
+    collectErrors: function(error) {
+      if (error !== null) {
+        return error.details.reduce((errors, {path, message}) => {
+          errors[path] = message;
           return errors;
         }, {});
       }

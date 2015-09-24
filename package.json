@@ -58,6 +58,7 @@
     "joi": ">=5.1.0"
   },
   "dependencies": {
+    "invariant": "^2.1.1",
     "lodash.isempty": "^3.0.4",
     "lodash.set": "^3.7.4"
   }

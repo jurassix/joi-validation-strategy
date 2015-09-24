@@ -137,7 +137,7 @@ describe('Joi Validator', () => {
     };
     strategy().validate({range: [100,200], password: ''}, schema, {}, errors => {
       expect(errors).to.have.keys(['range','password']);
-      expect(errors['password']).to.equal('"password" is not allowed to be empty\n"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
+      expect(errors['password']).to.equal('"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
       expect(errors['range']).to.have.length(2);
       expect(errors['range'][0]).to.equal('"0" must be less than or equal to 10');
       expect(errors['range'][1]).to.equal('"1" must be less than or equal to 10');
@@ -151,7 +151,7 @@ describe('Joi Validator', () => {
     };
     strategy().validate({range: [100,200], password: ''}, schema, {key:'password'}, errors => {
       expect(errors).to.have.keys(['password']);
-      expect(errors['password']).to.equal('"password" is not allowed to be empty\n"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
+      expect(errors['password']).to.equal('"password" with value "" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/');
       expect(errors['range']).to.be.undefined;
       done();
     });
