@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import set from 'lodash.set';
-import isEmpty from 'lodash.isEmpty';
+import isEmpty from 'lodash.isempty';
 import {hydrate} from './utils';
 import invariant from 'invariant';
 
