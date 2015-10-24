@@ -25,7 +25,8 @@ export default joiOptions => {
     collectErrors: function(error) {
       if (error !== null) {
         return error.details.reduce((errors, {path, message}) => {
-          errors[path] = message;
+          errors[path] = errors[path] || [];
+          errors[path].push(message);
           return errors;
         }, {});
       }
