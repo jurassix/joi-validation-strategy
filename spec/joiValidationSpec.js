@@ -110,6 +110,20 @@ describe('Joi Validator', () => {
       done();
     });
   });
+  it('should fail validation for nested schema and data for intermediate key and its children', (done) => {
+    const schema = Joi.object().keys({
+      a: {
+        b: Joi.string().required(),
+        c: Joi.string().required(),
+      },
+      d: Joi.string().required(),
+    });
+    const data = {a:{}};
+    strategy().validate(data, schema, {key:'a'}, errors => {
+      expect(errors).to.deep.equal({a:{b:['"b" is required'], c:['"c" is required']}});
+      done();
+    });
+  });
   it('should validate arrays in schema and data', (done) => {
     const schema = {
       range: Joi.array().items(Joi.number().min(0).max(10)),
