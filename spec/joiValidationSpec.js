@@ -170,4 +170,36 @@ describe('Joi Validator', () => {
       done();
     });
   });
+  it('should validate object arrays in schema and data', (done) => {
+    const schema = {
+      objects: Joi.array().items({
+        a: Joi.string().required(),
+        b: Joi.number().required()
+      })
+    };
+    const value = {objects: [{a: 'a', b: 1}, {a: 'a'}]};
+    strategy().validate(value, schema, {}, errors => {
+      expect(errors).to.have.keys(['objects']);
+      expect(errors['objects']).to.have.length(2);
+      expect(errors['objects'][0]).to.equal(undefined);
+      expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
+      done();
+    });
+  });
+  it('should validate object arrays in schema and data for key', (done) => {
+    const schema = {
+      objects: Joi.array().items({
+        a: Joi.string().required(),
+        b: Joi.number().required()
+      })
+    };
+    const value = {objects: [{}, {a: 'a'}]};
+    strategy().validate(value, schema, {key:'objects[1]'}, errors => {
+      expect(errors).to.have.keys(['objects']);
+      expect(errors['objects']).to.have.length(2);
+      expect(errors['objects'][0]).to.equal(undefined);
+      expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
+      done();
+    });
+  });
 });
