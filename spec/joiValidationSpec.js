@@ -110,6 +110,20 @@ describe('Joi Validator', () => {
       done();
     });
   });
+  it('should fail validation for nested schema and data for intermediate key and its children', (done) => {
+    const schema = Joi.object().keys({
+      a: {
+        b: Joi.string().required(),
+        c: Joi.string().required(),
+      },
+      d: Joi.string().required(),
+    });
+    const data = {a:{}};
+    strategy().validate(data, schema, {key:'a'}, errors => {
+      expect(errors).to.deep.equal({a:{b:['"b" is required'], c:['"c" is required']}});
+      done();
+    });
+  });
   it('should validate arrays in schema and data', (done) => {
     const schema = {
       range: Joi.array().items(Joi.number().min(0).max(10)),
@@ -153,6 +167,38 @@ describe('Joi Validator', () => {
       expect(errors).to.have.keys(['password']);
       expect(errors['password']).to.deep.equal(['\"password\" is not allowed to be empty', '\"password\" with value \"\" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/']);
       expect(errors['range']).to.be.undefined;
+      done();
+    });
+  });
+  it('should validate object arrays in schema and data', (done) => {
+    const schema = {
+      objects: Joi.array().items({
+        a: Joi.string().required(),
+        b: Joi.number().required()
+      })
+    };
+    const value = {objects: [{a: 'a', b: 1}, {a: 'a'}]};
+    strategy().validate(value, schema, {}, errors => {
+      expect(errors).to.have.keys(['objects']);
+      expect(errors['objects']).to.have.length(2);
+      expect(errors['objects'][0]).to.equal(undefined);
+      expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
+      done();
+    });
+  });
+  it('should validate object arrays in schema and data for key', (done) => {
+    const schema = {
+      objects: Joi.array().items({
+        a: Joi.string().required(),
+        b: Joi.number().required()
+      })
+    };
+    const value = {objects: [{}, {a: 'a'}]};
+    strategy().validate(value, schema, {key:'objects[1]'}, errors => {
+      expect(errors).to.have.keys(['objects']);
+      expect(errors['objects']).to.have.length(2);
+      expect(errors['objects'][0]).to.equal(undefined);
+      expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
       done();
     });
   });

@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import set from 'lodash.set';
+import get from 'lodash.get';
 import isEmpty from 'lodash.isempty';
 import {hydrate} from './utils';
 import invariant from 'invariant';
@@ -19,7 +20,7 @@ export default joiOptions => {
         if (key === undefined || key === null || isEmpty(errors)) {
           return callback(hydrate(errors));
         }
-        return callback(set(prevErrors, key, errors[key]));
+        return callback(set(prevErrors, key, get(hydrate(errors), key)));
       });
     },
     collectErrors: function(error) {
