@@ -151,7 +151,10 @@ describe('Joi Validator', () => {
     };
     strategy().validate({range: [100,200], password: ''}, schema, {}, errors => {
       expect(errors).to.have.keys(['range','password']);
-      expect(errors['password']).to.deep.equal(['\"password\" is not allowed to be empty', '\"password\" with value \"\" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/']);
+      expect(errors['password']).to.deep.equal([
+        '\"password\" is not allowed to be empty',
+        '\"password\" with value \"\" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/'
+      ]);
       expect(errors['range']).to.have.length(2);
       expect(errors['range'][0]).to.deep.equal(['"0" must be less than or equal to 10']);
       expect(errors['range'][1]).to.deep.equal(['"1" must be less than or equal to 10']);
@@ -165,7 +168,10 @@ describe('Joi Validator', () => {
     };
     strategy().validate({range: [100,200], password: ''}, schema, {key:'password'}, errors => {
       expect(errors).to.have.keys(['password']);
-      expect(errors['password']).to.deep.equal(['\"password\" is not allowed to be empty', '\"password\" with value \"\" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/']);
+      expect(errors['password']).to.deep.equal([
+        '\"password\" is not allowed to be empty',
+        '\"password\" with value \"\" fails to match the required pattern: /[a-zA-Z0-9]{3,30}/'
+      ]);
       expect(errors['range']).to.be.undefined;
       done();
     });
@@ -199,6 +205,32 @@ describe('Joi Validator', () => {
       expect(errors['objects']).to.have.length(2);
       expect(errors['objects'][0]).to.equal(undefined);
       expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
+      done();
+    });
+  });
+  it('should validate nested objects', (done) => {
+    const schema = Joi.object({
+      objects: Joi.array().items({
+        a: Joi.string().required(),
+        b: Joi.number().required()
+      }),
+      form: Joi.object({
+        username: Joi.string().alphanum().min(3).max(30).label('Username'),
+        email: Joi.string().email().label('Email address'),
+        password: Joi.string().min(6).max(30).label('Password')
+      })
+      .or('form.username', 'form.email')
+      .label('Your form')
+    });
+    strategy().validate({objects:[{}, {a: 'a'}], form: {username: null}}, schema, {}, errors => {
+      expect(errors).to.have.keys(['objects', 'form']);
+      expect(errors['objects']).to.have.length(2);
+      // expect(errors['objects'][0]).to.equal(undefined);
+      expect(errors['objects'][1]).to.deep.equal({b:['\"b\" is required']});
+      // expect(errors['form']).to.have.keys(['username']);
+      expect(errors['form']).to.have.length(1);
+      expect(errors['form'][0]).to.equal('"Your form" must contain at least one of [form.username, form.email]');
+      expect(errors['form'].username[0]).to.equal('"Username" must be a string');
       done();
     });
   });
